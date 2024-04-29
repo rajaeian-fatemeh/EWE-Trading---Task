@@ -1,0 +1,65 @@
+---
+title: "Fatemeh Rajaeian - Task"
+format: html
+---
+
+```{python}
+### Bestttttttttttttt
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Define the API endpoint URL
+url = "https://alsi.gie.eu/api"
+
+# Parameters for the request
+params = {
+    "country": "DE",
+    "key": "024f81699503eb41870b93732781370a"
+}
+
+# Make the GET request
+response = requests.get(url, params=params)
+
+# Check if the request was successful
+if response.status_code == 200:
+    # Extract JSON data from the response
+    data = response.json()
+    
+    # Extract the 'data' key which contains the list of dictionaries
+    data_list = data.get('data', [])
+    
+    # Convert the list of dictionaries into a DataFrame
+    df = pd.DataFrame(data_list)
+    
+    # Convert 'sendOut' column to numeric type
+    df['sendOut'] = pd.to_numeric(df['sendOut'], errors='coerce')
+    
+    # Convert 'gasDayStart' column to datetime type
+    df['gasDayStart'] = pd.to_datetime(df['gasDayStart'])
+    
+    # Filter data for dates between 26 March and 26 April
+    filtered_df = df[(df['gasDayStart'] >= '2024-03-26') & (df['gasDayStart'] <= '2024-04-26')]
+    
+    # Sort the DataFrame by 'gasDayStart'
+    filtered_df = filtered_df.sort_values(by='gasDayStart')
+    
+    # Plot the data
+    plt.figure(figsize=(10, 6))
+    plt.plot(filtered_df['gasDayStart'], filtered_df['sendOut'], marker='o', linestyle='-')
+    plt.title('LNG Send-outs into Germany (26 March - 26 April)')
+    plt.xlabel('Gas Day Start')
+    plt.ylabel('Send Out')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+    
+else:
+    print("Error:", response.status_code)
+
+
+```
+
+
+
